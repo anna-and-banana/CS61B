@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Anna
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -133,21 +133,32 @@ public class Model extends Observable {
         return maxTileExists(b) || !atLeastOneMoveExists(b);
     }
 
+    /** Iterates all tiles on board, return those tiles in an array */
+    private static Tile[] getAllTiles(Board b) {
+        int boardSize = b.size();
+        Tile[] allTiles = new Tile[boardSize * boardSize];
+
+        int i = 0;
+        for (int col = 0; col < boardSize; col++) {
+            for (int row = 0; row < boardSize; row++) {
+                allTiles[i] = b.tile(col, row);
+                i++;
+            }
+        }
+        return allTiles;
+    }
+
     /** Returns true if at least one space on the Board is empty.
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
-        int boardSize = b.size();
-
-        for (int col = 0; col < boardSize; col++) {
-            for (int row = 0; row < boardSize; row++) {
-                if (b.tile(col, row) == null) {
-                    return true;
-                }
+        Tile[] allTiles = getAllTiles(b);
+        for (Tile tile : allTiles) {
+            if (tile == null) {
+                return true;
             }
         }
-
         return false;
     }
 
@@ -158,17 +169,12 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
-        int boardSize = b.size();
-
-        for (int col = 0; col < boardSize; col++) {
-            for (int row = 0; row < boardSize; row++) {
-                Tile tile = b.tile(col, row);
-                if (tile != null && tile.value() == MAX_PIECE) {
-                    return true;
-                }
+        Tile[] allTiles = getAllTiles(b);
+        for (Tile tile : allTiles) {
+            if (tile != null && tile.value() == MAX_PIECE) {
+                return true;
             }
         }
-
         return false;
     }
 
@@ -180,7 +186,67 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        return emptySpaceExists(b) || twoAdjacentSameTilesExist(b);
+    }
+
+    /**
+     * Returns true if there are two adjacent tiles with the same value,
+     * otherwise return false.
+     */
+    private static boolean twoAdjacentSameTilesExist(Board b) {
+        Tile[] allTiles = getAllTiles(b);
+        String[] directions = {"up", "down", "left", "right"};
+        for (Tile tile : allTiles) {
+            if (tile != null) {
+                for (String direction : directions) {
+                    Tile adjacentTile = getAdjacentTile(b, tile, direction);
+                    if (adjacentTile != null && tile.value() == adjacentTile.value()) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
+    }
+
+    /**
+     * Search a tile which is adjacent to the giving tile in specific direction
+     * Return the tile if it exists, otherwise return null
+     */
+    private static Tile getAdjacentTile(Board board, Tile tile, String direction) {
+        int col, row;
+        int boardSize = board.size();
+        switch (direction) {
+            case "up":
+                col = tile.col();
+                row = tile.row() + 1;
+                break;
+
+            case "down":
+                col = tile.col();
+                row = tile.row() - 1;
+                break;
+
+            case "left":
+                col = tile.col() - 1;
+                row = tile.row();
+                break;
+
+            case "right":
+                col = tile.col() + 1;
+                row = tile.row();
+                break;
+
+            default:
+                col = -1;
+                row = -1;
+        }
+
+        Tile adjacentTile = null;
+        if (col >= 0 && col < boardSize && row >= 0 && row < boardSize) {
+            adjacentTile = board.tile(col, row);
+        }
+        return adjacentTile;
     }
 
 
