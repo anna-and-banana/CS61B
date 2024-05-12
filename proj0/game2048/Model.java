@@ -94,7 +94,7 @@ public class Model extends Observable {
         setChanged();
     }
 
-    /** Tilt the board toward SIDE. Return true iff this changes the board.
+    /** Tilt the board toward SIDE. Return true if this changes the board.
      *
      * 1. If two Tile objects are adjacent in the direction of motion and have
      *    the same value, they are merged into one Tile of twice the original
@@ -113,6 +113,47 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+
+        // Check if there are any valid moves on the board, move tiles and set changed to true.
+        // Otherwise, do nothing.
+
+        board.setViewingPerspective(side);
+        // From WEST to EAST, from NORTH to SOUTH, iterate every position, check if a tile can move it here.
+        int size = board.size();
+        for (int col = 0; col < size; col++) {
+            for (int targetRow = size - 1; targetRow >= 0; targetRow--) {
+                // Get a tile at current column from top to down except the TARGETROW.
+                for (int row = targetRow - 1; row >= 0; row--) {
+                    Tile tile = board.tile(col, row);
+
+                    if (tile != null) {
+                        changed = true;
+                        // Move the tile to the highest row where it can reach.
+                        // By meaning "the highest row where it can reach" refers to
+                        // 1. the TARGETROW has no tile
+                        // 2. the TARGETROW has a tile which can be merged
+                        // 3. the TARGETROW has a tile but can't merge
+                        Tile targetTile = board.tile(col, targetRow);
+                        if (targetTile == null) {
+                            // For situation 1: the TARGETROW has no tile
+                            board.move(col, targetRow, tile);
+                        } else if (targetTile.value() == tile.value()){
+                            // For situation 2: the TARGETROW has a tile which can be merged
+                            // Move the tile to merge, then break to next TARGETTILE
+                            board.move(col, targetRow, tile);
+                            score += tile.value() * 2;
+                            break;
+                        } else {
+                            // For situation 3: the TARGETROW has a tile but can't merge
+                            // It should move the tile to TARGETROW-1 row, then break to next TARGETTILE
+                            board.move(col, targetRow - 1, tile);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -133,28 +174,12 @@ public class Model extends Observable {
         return maxTileExists(b) || !atLeastOneMoveExists(b);
     }
 
-    /** Iterates all tiles on board, return those tiles in an array */
-    private static Tile[] getAllTiles(Board b) {
-        int boardSize = b.size();
-        Tile[] allTiles = new Tile[boardSize * boardSize];
-
-        int i = 0;
-        for (int col = 0; col < boardSize; col++) {
-            for (int row = 0; row < boardSize; row++) {
-                allTiles[i] = b.tile(col, row);
-                i++;
-            }
-        }
-        return allTiles;
-    }
-
     /** Returns true if at least one space on the Board is empty.
      *  Empty spaces are stored as null.
      * */
-    public static boolean emptySpaceExists(Board b) {
+    public static boolean emptySpaceExists(Board board) {
         // TODO: Fill in this function.
-        Tile[] allTiles = getAllTiles(b);
-        for (Tile tile : allTiles) {
+        for (Tile tile : board) {
             if (tile == null) {
                 return true;
             }
@@ -167,10 +192,9 @@ public class Model extends Observable {
      * Maximum valid value is given by MAX_PIECE. Note that
      * given a Tile object t, we get its value with t.value().
      */
-    public static boolean maxTileExists(Board b) {
+    public static boolean maxTileExists(Board board) {
         // TODO: Fill in this function.
-        Tile[] allTiles = getAllTiles(b);
-        for (Tile tile : allTiles) {
+        for (Tile tile : board) {
             if (tile != null && tile.value() == MAX_PIECE) {
                 return true;
             }
@@ -184,22 +208,21 @@ public class Model extends Observable {
      * 1. There is at least one empty space on the board.
      * 2. There are two adjacent tiles with the same value.
      */
-    public static boolean atLeastOneMoveExists(Board b) {
+    public static boolean atLeastOneMoveExists(Board board) {
         // TODO: Fill in this function.
-        return emptySpaceExists(b) || twoAdjacentSameTilesExist(b);
+        return emptySpaceExists(board) || twoAdjacentSameTilesExist(board);
     }
 
     /**
      * Returns true if there are two adjacent tiles with the same value,
      * otherwise return false.
      */
-    private static boolean twoAdjacentSameTilesExist(Board b) {
-        Tile[] allTiles = getAllTiles(b);
-        String[] directions = {"up", "down", "left", "right"};
-        for (Tile tile : allTiles) {
+    private static boolean twoAdjacentSameTilesExist(Board board) {
+        Side[] directions = {Side.NORTH, Side.SOUTH, Side.WEST, Side.EAST};
+        for (Tile tile : board) {
             if (tile != null) {
-                for (String direction : directions) {
-                    Tile adjacentTile = getAdjacentTile(b, tile, direction);
+                for (Side direction : directions) {
+                    Tile adjacentTile = getAdjacentTile(board, tile, direction);
                     if (adjacentTile != null && tile.value() == adjacentTile.value()) {
                         return true;
                     }
@@ -213,33 +236,28 @@ public class Model extends Observable {
      * Search a tile which is adjacent to the giving tile in specific direction
      * Return the tile if it exists, otherwise return null
      */
-    private static Tile getAdjacentTile(Board board, Tile tile, String direction) {
+    private static Tile getAdjacentTile(Board board, Tile tile, Side direction) {
         int col, row;
         int boardSize = board.size();
         switch (direction) {
-            case "up":
+            case NORTH:
                 col = tile.col();
                 row = tile.row() + 1;
                 break;
-
-            case "down":
+            case SOUTH:
                 col = tile.col();
                 row = tile.row() - 1;
                 break;
-
-            case "left":
+            case WEST:
                 col = tile.col() - 1;
                 row = tile.row();
                 break;
-
-            case "right":
+            case EAST:
                 col = tile.col() + 1;
                 row = tile.row();
                 break;
-
             default:
-                col = -1;
-                row = -1;
+                return null;
         }
 
         Tile adjacentTile = null;
@@ -251,7 +269,7 @@ public class Model extends Observable {
 
 
     @Override
-     /** Returns the model as a string, used for debugging. */
+    /** Returns the model as a string, used for debugging. */
     public String toString() {
         Formatter out = new Formatter();
         out.format("%n[%n");
