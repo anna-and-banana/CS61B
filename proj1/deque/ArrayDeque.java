@@ -87,7 +87,7 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T get(int index) {
-        return (isEmpty() || isIndexInRange(index)) ? null : items[index];
+        return (isEmpty() || indexNotInRange(index)) ? null : items[index];
     }
 
     private boolean isFull() {
@@ -95,10 +95,10 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     private boolean isSpacious() {
-        return (size >= INITIAL_SIZE) && (size * 4 < items.length);
+        return (size > INITIAL_SIZE) && (size * 4 < items.length);
     }
 
-    private boolean isIndexInRange(int index) {
+    private boolean indexNotInRange(int index) {
         return index < 0 || index >= size;
     }
 
