@@ -23,7 +23,7 @@ public class ArrayDeque<T> implements Deque<T> {
             resize(size * RESIZE_FACTOR);
         }
         items[nextFirst] = item;
-        nextFirst = nextFirstIndex(nextFirst);
+        nextFirst = nextFirstIndex();
         size++;
     }
 
@@ -33,7 +33,7 @@ public class ArrayDeque<T> implements Deque<T> {
             resize(size * RESIZE_FACTOR);
         }
         items[nextLast] = item;
-        nextLast = nextLastIndex(nextLast);
+        nextLast = nextLastIndex();
         size++;
     }
 
@@ -60,11 +60,12 @@ public class ArrayDeque<T> implements Deque<T> {
         if (isSpacious()) {
             resize(size * RESIZE_FACTOR);
         }
-        int currentFirst = previousFirstIndex(nextFirst);
+        int currentFirst = relativeIndexOf(0);
         T remove = items[currentFirst];
         items[currentFirst] = null;
         nextFirst = currentFirst;
         size--;
+
         return remove;
     }
 
@@ -77,17 +78,18 @@ public class ArrayDeque<T> implements Deque<T> {
         if (isSpacious()) {
             resize(size * RESIZE_FACTOR);
         }
-        int currentLast = previousLastIndex(nextLast);
+        int currentLast = relativeIndexOf(size - 1);
         T remove = items[currentLast];
         items[currentLast] = null;
         nextLast = currentLast;
         size--;
+
         return remove;
     }
 
     @Override
     public T get(int index) {
-        return (isEmpty() || indexNotInRange(index)) ? null : items[index];
+        return (isEmpty() || indexNotInRange(index)) ? null : items[relativeIndexOf(index)];
     }
 
     private boolean isFull() {
@@ -118,35 +120,29 @@ public class ArrayDeque<T> implements Deque<T> {
     private T[] makeOrdered() {
         T[] ordered = (T[]) new Object[size];
 
-        int position = firstItemIndex();
         for (int i = 0; i < size; i++) {
+            int position = relativeIndexOf(i);
             ordered[i] = items[position];
-            position = nextItemIndex(position);
         }
         return ordered;
     }
 
-    private int nextFirstIndex(int index) {
-        return index == 0 ? items.length - 1 : index - 1;
+    private int nextFirstIndex() {
+        return nextFirst == 0 ? items.length - 1 : nextFirst - 1;
     }
 
-    private int nextLastIndex(int index) {
-        return index == items.length - 1 ? 0 : index + 1;
+    private int nextLastIndex() {
+        return nextLast == items.length - 1 ? 0 : nextLast + 1;
     }
 
-    private int previousFirstIndex(int index) {
-        return index == items.length - 1 ? 0 : index + 1;
+    private int relativeIndexOf(int index) {
+        int first = currentFirstIndex();
+        int relative = first + index;
+        int length = items.length;
+        return relative >= length ? relative - length : relative;
     }
 
-    private int previousLastIndex(int index) {
-        return index == 0 ? items.length - 1 : index - 1;
-    }
-
-    private int firstItemIndex() {
-        return previousFirstIndex(nextFirst);
-    }
-
-    private int nextItemIndex(int index) {
-        return previousFirstIndex(index);
+    private int currentFirstIndex() {
+        return nextFirst == items.length - 1 ? 0 : nextFirst + 1;
     }
 }
