@@ -1,6 +1,8 @@
 package deque;
 
-public class LinkedListDeque<T> implements Deque<T> {
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     public class Node {
         private T item;
@@ -124,10 +126,64 @@ public class LinkedListDeque<T> implements Deque<T> {
         return item;
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        // For saving calculation time, if OBJ is self, return true
+        if (this == obj) {
+            return true;
+        }
+
+        // If two things are not the same object,
+        // then check two things are equal or not
+        if (obj instanceof LinkedListDeque other) {
+            if (this.size != other.size) {
+                return false;
+            }
+            for (int i = 0; i < size; i++) {
+                T x = this.get(i);
+                T y = (T) other.get(i);
+                if (!x.equals(y)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Not the same and not equal
+        return false;
+    }
+
+    /**
+     * Helper
+     **/
+
     private T getRecursiveHelper(int index, Node p) {
         if (index == 0) {
             return p.item;
         }
         return getRecursiveHelper(--index, p.next);
+    }
+
+    private class LinkedListDequeIterator implements Iterator<T> {
+
+        private int position;
+
+        public LinkedListDequeIterator() {
+            position = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return position < size;
+        }
+
+        @Override
+        public T next() {
+            return get(position++);
+        }
     }
 }

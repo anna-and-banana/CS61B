@@ -121,4 +121,32 @@ public class ArrayDequeTest {
         adi.get(1);
         adi.get(3);
     }
+
+    @Test
+    public void iteratorTest() {
+        ArrayDeque<Integer> adi = new ArrayDeque<>();
+        adi.addLast(1);
+        adi.addLast(4);
+        adi.addLast(8);
+        adi.addLast(11);
+
+        for (Integer x : adi) {
+            System.out.print(x + " ");
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void equalsTest() {
+        ArrayDeque<String> ads1 = new ArrayDeque<>();
+        ArrayDeque<String> ads2 = new ArrayDeque<>();
+
+        ads1.addLast("Hello");
+        ads1.addLast("World");
+
+        ads2.addLast("Hello");
+        ads2.addLast("World");
+
+        assertTrue(ads1.equals(ads2));
+    }
 }

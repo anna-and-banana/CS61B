@@ -33,7 +33,7 @@ public class LinkedListDequeTest {
     }
 
     @Test
-    /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
+    /** Adds an item, then removes an item, and ensures that dll is empty afterward. */
     public void addRemoveTest() {
         LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
 		// should be empty
@@ -68,7 +68,7 @@ public class LinkedListDequeTest {
     }
 
     @Test
-    /* Check if you can create LinkedListDeques with different parameterized types*/
+    /* Check if you can create LinkedListDeque with different parameterized types*/
     public void multipleParamTest() {
         LinkedListDeque<String>  lld1 = new LinkedListDeque<String>();
         LinkedListDeque<Double>  lld2 = new LinkedListDeque<Double>();
@@ -139,5 +139,34 @@ public class LinkedListDequeTest {
         lld.getRecursive(0);
         lld.getRecursive(1);
         lld.getRecursive(3);
+    }
+
+    @Test
+    public void iteratorTest() {
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+
+        lld.addLast(1);
+        lld.addLast(4);
+        lld.addLast(8);
+        lld.addLast(11);
+
+        for (Integer x : lld) {
+            System.out.print(x + " ");
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void equalsTest() {
+        LinkedListDeque<String> lld1 = new LinkedListDeque<>();
+        LinkedListDeque<String> lld2 = new LinkedListDeque<>();
+
+        lld1.addLast("Hello");
+        lld1.addLast("World");
+
+        lld2.addLast("Hello");
+        lld2.addLast("World");
+
+        assertTrue(lld1.equals(lld2));
     }
 }

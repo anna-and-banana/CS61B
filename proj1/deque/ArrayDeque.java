@@ -1,6 +1,8 @@
 package deque;
 
-public class ArrayDeque<T> implements Deque<T> {
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private T[] items;
     private int nextFirst;
@@ -9,6 +11,8 @@ public class ArrayDeque<T> implements Deque<T> {
 
     private static final int INITIAL_SIZE = 8;
     private static final int RESIZE_FACTOR = 2;
+
+    /* Methods */
 
     public ArrayDeque() {
         items = (T[]) new Object[INITIAL_SIZE];
@@ -89,8 +93,41 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T get(int index) {
-        return (isEmpty() || indexNotInRange(index)) ? null : items[relativeIndexOf(index)];
+        return (isEmpty() || isIndexNotInRange(index)) ? null : items[relativeIndexOf(index)];
     }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        // For saving calculation time, if OBJ is self, return true
+        if (this == obj) {
+            return true;
+        }
+
+        // If two things are not the same object,
+        // then check two things are equal or not
+        if (obj instanceof ArrayDeque other) {
+            if (this.size != other.size) {
+                return false;
+            }
+            for (int i = 0; i < size; i++) {
+                T x = this.get(i);
+                T y = (T) other.get(i);
+                if (!x.equals(y)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // Not the same and not equal
+        return false;
+    }
+
+    /* Helper members */
 
     private boolean isFull() {
         return size == items.length;
@@ -100,7 +137,7 @@ public class ArrayDeque<T> implements Deque<T> {
         return (size > INITIAL_SIZE) && (size * 4 < items.length);
     }
 
-    private boolean indexNotInRange(int index) {
+    private boolean isIndexNotInRange(int index) {
         return index < 0 || index >= size;
     }
 
@@ -127,14 +164,6 @@ public class ArrayDeque<T> implements Deque<T> {
         return ordered;
     }
 
-    private int nextFirstIndex() {
-        return nextFirst == 0 ? items.length - 1 : nextFirst - 1;
-    }
-
-    private int nextLastIndex() {
-        return nextLast == items.length - 1 ? 0 : nextLast + 1;
-    }
-
     private int relativeIndexOf(int index) {
         int first = currentFirstIndex();
         int relative = first + index;
@@ -144,5 +173,32 @@ public class ArrayDeque<T> implements Deque<T> {
 
     private int currentFirstIndex() {
         return nextFirst == items.length - 1 ? 0 : nextFirst + 1;
+    }
+
+    private int nextFirstIndex() {
+        return nextFirst == 0 ? items.length - 1 : nextFirst - 1;
+    }
+
+    private int nextLastIndex() {
+        return nextLast == items.length - 1 ? 0 : nextLast + 1;
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+
+        private int position;
+
+        public ArrayDequeIterator() {
+            position = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return position < size;
+        }
+
+        @Override
+        public T next() {
+            return get(position++);
+        }
     }
 }
