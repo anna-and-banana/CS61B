@@ -101,7 +101,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return new ArrayDequeIterator();
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object obj) {
         // For saving calculation time, if OBJ is self, return true
         if (this == obj) {
@@ -125,6 +125,24 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
         // Not the same and not equal
         return false;
+    }*/
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o == this)
+            return true;
+        if (!(o instanceof Deque))
+            return false;
+        Deque<T> oc = (Deque<T>) o;
+        if (!(oc.size() == this.size))
+            return false;
+        for (int i = 0; i < size; i++) {
+            if (!(this.get(i).equals(oc.get(i))))
+                return false;
+        }
+        return true;
     }
 
     /* Helper members */
