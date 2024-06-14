@@ -131,7 +131,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return new LinkedListDequeIterator();
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object obj) {
         // For saving calculation time, if OBJ is self, return true
         if (this == obj) {
@@ -155,6 +155,29 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         }
         // Not the same and not equal
         return false;
+    }*/
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Deque)) {
+            return false;
+        }
+        Deque<T> oc = (Deque<T>) obj;
+        if (!(oc.size() == this.size)) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (!(this.get(i).equals(oc.get(i)))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
