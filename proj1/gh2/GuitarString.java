@@ -27,7 +27,6 @@ public class GuitarString {
         }
     }
 
-
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         // Dequeue everything in buffer, and replace with random numbers
