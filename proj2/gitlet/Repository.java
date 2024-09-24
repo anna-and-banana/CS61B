@@ -1,9 +1,10 @@
 package gitlet;
 
-import java.io.File;
-import static gitlet.Utils.*;
-
 // TODO: any imports you need here
+import java.io.File;
+import java.nio.file.Path;
+
+import static gitlet.Utils.*;
 
 /** Represents a gitlet repository.
  *  TODO: It's a good idea to give a description here of what else this Class does at a high level.
@@ -23,6 +24,8 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
+    /* The .gitlet path */
+    public static final Path GITLET_PATH = GITLET_DIR.toPath();
 
     /* TODO: fill in the rest of this class. */
 
@@ -30,10 +33,12 @@ public class Repository {
      * Usage: 'java gitlet.Main init'
      * Description: creates a new Gitlet version-control system in the current directory.
      * Details: 1. make persistence
-     *             .gitlet         <== All persistant data is stored within here
-     *             ├── commits     <== All commits are stored within here
-     *             ├── staging     <== All 'add' files are stored here temporary
-     *             └── files       <== All commited files are stored within here
+     *             .gitlet
+     *              ├── staging_area
+     *              │   ├── staged_for_addition
+     *              │   └── staged_for_removal
+     *              ├── commits
+     *              └── blobs
      *          2. This system will automatically start with one commit:
      *             a commit that contains no files and has the commit message 'initial commit'.
      *             It will have a single branch: 'master',

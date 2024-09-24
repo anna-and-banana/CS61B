@@ -3,7 +3,7 @@
 **Name**: Anna
 
 ## What is Gitlet
-- Gitlet is a version-controll system that mimics some of 
+- Gitlet is a version-control system that mimics some of 
 the basic features of the Git.
 - A version-control system is essentially a backup system 
 for related collections of files.
@@ -39,8 +39,10 @@ or entire commits.
 
 ## Persistence
 ```
-.gitlet         <== All persistant data is stored within here
-├── commits     <== All commits are stored within here
-├── staging     <== All 'add' files are stored here temporary
-└── files       <== All commited files are stored within here
+.gitlet
+├── staging_area
+│   ├── staged_for_addition     <== file or directory?
+│   └── staged_for_removal      <== file or directory?
+├── commits
+└── blobs
 ```
