@@ -1,58 +1,115 @@
 package gitlet;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 
-/** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author Anna
+
+/**
+ * Overview: Driver class for Gitlet, a subset of the Git version-control system.
+ * Description:
+ * @author Anna
  */
 public class Main {
 
-    /** Usage: java gitlet.Main ARGS, where ARGS contains
+    /**
+     *  Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
         if (args.length == 0) {
-            exitWithError("Please enter a command.");
+            Utils.exitWithError("Please enter a command.");
         }
 
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
-                /** Checks the number of arguments versus the expected number,
-                 *  exits if not expected */
+                // Checks the number of arguments versus the expected number/
                 validateNumArgs(args, 1);
 
-                /** Checks if the directory '.gitlet' exists,
-                 *  if it exists, then print out "Not in an initialized Gitlet directory.",
-                 *  and exits with error code 0. */
-                if (Files.exists(Repository.GITLET_PATH)) {
-                    exitWithError("Not in an initialized Gitlet directory.");
+                // 'init' command should only work while '.gitlet' is not exist.
+                if (Files.exists(Repository.GITLET_DIR.toPath())) {
+                    Utils.exitWithError("Not in an initialized Gitlet directory.");
                 }
 
-                /* Initialise Gitlet repository in CWD */
+                // Initialize Gitlet repository in CWD.
                 Repository.init();
                 break;
+
             case "add":
                 // TODO: handle the `add [filename]` command
 
                 break;
+
             // TODO: FILL THE REST IN
 
-            default:
-                exitWithError("No command with that name exists.");
-        }
-    }
+            case "commit":
 
-    /**
-     * Prints out MESSAGE and exits with error code 0.
-     * @param message message to print
-     */
-    private static void exitWithError(String message) {
-        Utils.message(message);
-        System.exit(0);
+                break;
+
+            case "rm":
+
+                break;
+
+            case "log":
+
+                break;
+
+            case "global-log":
+
+                break;
+
+            case "find":
+
+                break;
+
+            case "status":
+
+                break;
+
+            case "checkout":
+
+                break;
+
+            case "branch":
+
+                break;
+
+            case "rm-branch":
+
+                break;
+
+            case "reset":
+
+                break;
+
+            case "merge":
+
+                break;
+
+            // TODO: Going Remote
+
+            case "add-remote":
+
+                break;
+
+            case "rm-remote":
+
+                break;
+
+            case "push":
+
+                break;
+
+            case "fetch":
+
+                break;
+
+            case "pull":
+
+                break;
+
+            default:
+                Utils.exitWithError("No command with that name exists.");
+        }
     }
 
     /**
@@ -64,7 +121,7 @@ public class Main {
      */
     private static void validateNumArgs(String[] args, int n) {
         if (args.length != n) {
-            exitWithError("Incorrect operands.");
+            Utils.exitWithError("Incorrect operands.");
         }
     }
 }
