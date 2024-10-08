@@ -6,17 +6,17 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value> {
+public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
 
     private BSTNode root;
     private int size;
 
     private class BSTNode{
-        private Key key;
-        private Value val;
+        private K key;
+        private V val;
         private BSTNode left, right;
 
-        public BSTNode(Key key, Value val) {
+        public BSTNode(K key, V val) {
             this.key = key;
             this.val = val;
         }
@@ -71,7 +71,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Returns true if this map contains a mapping for the specified key, false otherwise.
      */
     @Override
-    public boolean containsKey(Key key) {
+    public boolean containsKey(K key) {
         return find(root, key) != null;
     }
 
@@ -80,7 +80,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  or null if this map contains no mapping for the key.
      */
     @Override
-    public Value get(Key key) {
+    public V get(K key) {
         BSTNode node = find(root, key);
         if (node != null) {
             return node.val;
@@ -88,7 +88,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
         return null;
     }
 
-    private BSTNode find(BSTNode node, Key key) {
+    private BSTNode find(BSTNode node, K key) {
         if (node == null) {
             return null;
         }
@@ -115,12 +115,12 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Associates the specified value with the specified key in this map.
      */
     @Override
-    public void put(Key key, Value val) {
+    public void put(K key, V val) {
         root = put(key, val, root);
         size++;
     }
 
-    private BSTNode put(Key key, Value val, BSTNode node) {
+    private BSTNode put(K key, V val, BSTNode node) {
         if (node == null) {
             return new BSTNode(key, val);
         }
@@ -140,8 +140,8 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Returns a Set view of the keys contained in this map.
      */
     @Override
-    public Set<Key> keySet() {
-        Set<Key> keySet = new HashSet<>();
+    public Set<K> keySet() {
+        Set<K> keySet = new HashSet<>();
         for (BSTNode node : traversal()) {
             keySet.add(node.key);
         }
@@ -152,7 +152,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Removes the mapping for the specified key from this map if present.
      */
     @Override
-    public Value remove(Key key) {
+    public V remove(K key) {
         throw new UnsupportedOperationException();
     }
 
@@ -160,7 +160,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Removes the entry for the specified key only if it is currently mapped to the specified value.
      */
     @Override
-    public Value remove(Key key, Value val) {
+    public V remove(K key, V val) {
         throw new UnsupportedOperationException();
     }
 
@@ -168,17 +168,17 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
      *  Returns an iterator that iterates over the keys of the map.
      */
     @Override
-    public Iterator<Key> iterator() {
+    public Iterator<K> iterator() {
         return new BSTMapIter();
     }
 
     /**
      * An iterator that iterates over the keys of the map.
      */
-    private class BSTMapIter implements Iterator<Key> {
+    private class BSTMapIter implements Iterator<K> {
 
         // Stores the current key-value pair
-        private Queue<Key> keys;
+        private Queue<K> keys;
 
         /**
          *  Create a new BSTMapIter by adding all keys into a queue in ascending order.
@@ -195,7 +195,7 @@ public class BSTMap<Key extends Comparable, Value> implements Map61B<Key, Value>
         }
 
         @Override
-        public Key next() {
+        public K next() {
             return keys.remove();
         }
     }
