@@ -238,11 +238,13 @@ class Utils {
     }
 
     /**
-     * Prints out MESSAGE and exits with error code 0.
-     * @param msg message to print
+     *  Prints out MSG and exits with error code 0.
+     *  @param msg message to print
      */
     static void exitWithError(String msg) {
-        message(msg);
+        if (msg != null && !msg.equals("")) {
+            System.out.println(msg);
+        }
         System.exit(0);
     }
 }

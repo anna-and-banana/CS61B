@@ -13,11 +13,6 @@ import static gitlet.Utils.*;
  *  @author Anna
  */
 public class Repository {
-    /**
-     * List all instance variables of the Repository class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided two examples for you.
-     */
 
     // The current working directory.
     public static final File CWD = new File(System.getProperty("user.dir"));
@@ -29,6 +24,9 @@ public class Repository {
     public static final File COMMIT_DIR = join(GITLET_DIR, "commits");
     // The 'blobs' directory.
     public static final File BLOBS_DIR = join(GITLET_DIR, "blobs");
+
+    // 'HEAD' refers the 'commit' that the repository is currently in.
+    private static String HEAD;
 
 
     // TODO: init()
