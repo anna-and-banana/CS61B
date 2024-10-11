@@ -1,6 +1,9 @@
 package gitlet;
 
+
 import java.nio.file.Files;
+
+import static gitlet.Utils.*;
 
 
 /**
@@ -16,7 +19,7 @@ public class Main {
      */
     public static void main(String[] args) {
         if (args.length == 0) {
-            Utils.exitWithError("Please enter a command.");
+            exitWithError("Please enter a command.");
         }
 
         String firstArg = args[0];
@@ -29,7 +32,7 @@ public class Main {
 
                 if (isInitialized()) {
                     // 'init' command should only work while '.gitlet' is not exist.
-                    Utils.exitWithError("A Gitlet version-control system " +
+                    exitWithError("A Gitlet version-control system " +
                             "already exists in the current directory.");
 
                 } else {
@@ -148,7 +151,7 @@ public class Main {
                 break;
 
             default:
-                Utils.exitWithError("No command with that name exists.");
+                exitWithError("No command with that name exists.");
         }
     }
 
@@ -162,7 +165,7 @@ public class Main {
      */
     private static void validateNumArgs(String[] args, int n) {
         if (args.length != n) {
-            Utils.exitWithError("Incorrect operands.");
+            exitWithError("Incorrect operands.");
         }
     }
 
@@ -180,7 +183,7 @@ public class Main {
      */
     private static void requireInitialized() {
         if (!isInitialized()) {
-            Utils.exitWithError("Not in an initialized Gitlet directory.");
+            exitWithError("Not in an initialized Gitlet directory.");
         }
     }
 }

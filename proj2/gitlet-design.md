@@ -40,9 +40,18 @@ or entire commits.
 ## Persistence
 ```
 .gitlet
-├── staging_area
-│   ├── staged_for_addition     <== file or directory?
-│   └── staged_for_removal      <== file or directory?
+├── blobs
 ├── commits
-└── blobs
+├── HEAD
+├── index
+└── refs
+    ├── heads
+    │   ├── master
+    │   └── ...
+    └── remotes
+        ├── origin
+        │   ├── master
+        │   └── ...
+        └── ...
 ```
+    

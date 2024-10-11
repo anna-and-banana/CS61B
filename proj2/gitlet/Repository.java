@@ -2,6 +2,9 @@ package gitlet;
 
 
 import java.io.File;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static gitlet.Utils.*;
 
@@ -16,46 +19,66 @@ public class Repository {
 
     // The current working directory.
     public static final File CWD = new File(System.getProperty("user.dir"));
-    // The '.gitlet' directory.
+    // The '.gitlet' directory, like the '.git' directory.
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-    // The 'staging_area' directory.
-    public static final File STAGING_AREA_DIR = join(GITLET_DIR, "staging_area");
-    // The 'commits' directory.
-    public static final File COMMIT_DIR = join(GITLET_DIR, "commits");
-    // The 'blobs' directory.
-    public static final File BLOBS_DIR = join(GITLET_DIR, "blobs");
+    // The 'HEAD' file, which stores HEAD pointer's data.
+    public static final File HEAD_FILE = join(GITLET_DIR, "HEAD");
+    // The 'objects' directory, which stores all objects including commits, blobs.
+    public static final File OBJ_DIR = join(GITLET_DIR, "objects");
+    // The 'staging_area' file.
+    public static final File STAGING_AREA_FILE = join(GITLET_DIR, "staging_area");
 
-    // 'HEAD' refers the 'commit' that the repository is currently in.
-    private static String HEAD;
+    // '.gitlet' persistence structure
+    private static final Map<File, String> GITLET_DIR_STRUCTURE = Map.of(
+            GITLET_DIR, "dir",
+            HEAD_FILE, "file",
+            OBJ_DIR, "dir",
+            STAGING_AREA_FILE, "file"
+    );
+
+    // The 'head' pointer refers the 'commit' that the repository is currently in.
+    private static Commit head;
+    // The working files in Gitlet repository
+    private static TreeSet<File> workingFiles;
 
 
-    // TODO: init()
+    public static void main(String[] args) {
+        setupPersistence();
+        workingFiles.forEach(System.out::println);
+    }
+
     /**
      * Usage: 'java gitlet.Main init'
+     * <p>
      * Description: creates a new Gitlet version-control system in the current directory.
-     * Details: 1. make persistence
+     * <p>
+     * Details: 1. make persistence:
      *             .gitlet
-     *              ├── staging_area
-     *              │   ├── staged_for_addition
-     *              │   └── staged_for_removal
-     *              ├── commits
-     *              └── blobs
+     *             ├── HEAD
+     *             ├── objects
+     *             │   └── ... (commits, blobs)
+     *             └── staging_area
      *          2. This system will automatically start with one commit:
-     *             a commit that contains no files and has the commit message "initial commit".
-     *             - It will have a single branch: 'master',
-     *               which initially points to this initial commit, and master will be the current branch.
-     *             - The timestamp for this initial commit will be 00:00:00 UTC, Thursday, 1 January 1970
-     *               in whatever format you choose for dates
-     *               (this is called “The (Unix) Epoch”, represented internally by the time 0.)
+     *             a commit that contains no files
+     *             and has the commit message "initial commit".
+     *             The timestamp for this initial commit will be
+     *             00:00:00 UTC, Thursday, 1 January 1970
+     *             in whatever format you choose for dates
+     *             (this is called “The (Unix) Epoch”,
+     *             represented internally by the time 0.)
+     *           3. It will have a single branch: 'master',
+     *              which initially points to this initial commit,
+     *              and master will be the current branch.
      */
     public static void init() {
+        // FIXME: version1, without branching
+
         // Make persistence.
         setupPersistence();
-
-        // Create initial commit.
-        Commit initialCommit = new Commit();
-
-        // TODO: Other things to do
+        // Create initial commit, and make the 'head' pointer refers to it,
+        head = new Commit();
+        // Save 'head' to HEAD file.
+        head.save(HEAD_FILE);
     }
 
     // TODO: add()
@@ -74,22 +97,29 @@ public class Repository {
      */
 
 
+    // Getter method
+
+    /**
+     *  Get repository's head pointer.
+     *  @return the 'Commit' object of head pointer refers to
+     */
+    public static Commit getHeadPointer() {
+        return head;
+    }
+
+
     // Helper method
 
     /**
      *  Setup Gitlet repository persistence
      *  structure: .gitlet
-     *              ├── staging_area
-     *              │   ├── staged_for_addition     <== file or directory?
-     *              │   └── staged_for_removal
-     *              ├── commits
-     *              └── blobs
+     *             ├── HEAD
+     *             ├── objects
+     *             │   └── ...
+     *             └── staging_area
      */
     private static void setupPersistence() {
-        // Create structure.
-        GITLET_DIR.mkdir();
-        STAGING_AREA_DIR.mkdir();
-        COMMIT_DIR.mkdir();
-        BLOBS_DIR.mkdir();
+        GITLET_DIR_STRUCTURE.forEach(Utils::createFileOrDirectory);
     }
+
 }

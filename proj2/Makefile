@@ -33,6 +33,10 @@ RMAKE = "$(MAKE)"
 default:
 	$(RMAKE) -C $(PACKAGE) default
 
+	# My commands
+	mkdir ~/test-gitlet/gitlet
+	cp -r ./gitlet/*.class ~/test-gitlet/gitlet/
+
 check: default
 	$(RMAKE) -C testing PYTHON=$(PYTHON) TESTER_FLAGS="$(TESTER_FLAGS)" check
 
@@ -42,4 +46,6 @@ clean:
 	$(RMAKE) -C $(PACKAGE) clean
 	$(RMAKE) -C testing clean
 
+	# My commands
 	$(RM) -r .gitlet
+	$(RM) -r ~/test-gitlet/.gitlet/ ~/test-gitlet/gitlet

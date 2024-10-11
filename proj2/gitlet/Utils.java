@@ -1,5 +1,6 @@
 package gitlet;
 
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 
 /** Assorted utilities.
@@ -237,14 +241,108 @@ class Utils {
         System.out.println();
     }
 
+
+    /* My Utils function */
+
     /**
-     *  Prints out MSG and exits with error code 0.
-     *  @param msg message to print
+     * Prints out MSG and exits with error code 0.
+     * @param msg message to print
      */
     static void exitWithError(String msg) {
         if (msg != null && !msg.equals("")) {
             System.out.println(msg);
         }
         System.exit(0);
+    }
+
+    /**
+     * Get relative path of a 'file' from 'reference'
+     * @param file the file to get relative path
+     * @param reference the reference to determines relative path
+     * @return a Path object of relative path
+     */
+    static String getRelativePath(File file, File reference) {
+        return reference.toPath()
+                        .relativize(file.toPath())
+                        .toString();
+    }
+
+    /**
+     * Get relative path of a 'file' from 'CWD'
+     * @param file the file to get relative path
+     * @return a Path object of relative path
+     */
+    static String getRelativePath(File file) {
+        return getRelativePath(file, Repository.CWD);
+    }
+
+    /**
+     * Create a file or directory according to 'fileType'
+     * @param x a File object to be created
+     * @param fileType "file" or "dir"
+     */
+     static void createFileOrDirectory(File x, String fileType) {
+        if (fileType.equals("file")) {
+            createFile(x);
+        } else if (fileType.equals("dir")){
+            x.mkdirs();
+        } else {
+            exitWithError("Unknown file type.");
+        }
+    }
+
+    /**
+     * Create a new file, without handling try-catch
+     * @param file a File object to be created
+     */
+    static void createFile(File file) {
+        // Make sure the directory path to this file exists
+        file.getParentFile().mkdirs();
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get files in 'dir' recursively, including subdirectory.
+     * @param dir where to get files
+     * @return a TreeSet of File
+     */
+    static TreeSet<File> getFilesIn(File dir) {
+        try {
+            return Files.walk(dir.toPath())
+                        .map(Path::toFile)
+                        .filter(File::isFile)
+                        .collect(Collectors.toCollection(TreeSet::new));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks if the absolute filename contains any String in "keywords"
+     * @param file the file to be checked
+     * @param keywords checking keywords
+     * @return true if file not contains with any keywords, false otherwise
+     */
+    static boolean isFilenameContains(File file, String... keywords) {
+        for (String keyword : keywords) {
+            if (file.toString().contains(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if it is Gitlet File
+     * @param file the file to be checked
+     * @return true if it's a Gitlet file, false otherwise
+     */
+    static boolean isGitletFile(File file) {
+        return isFilenameContains(file, ".gitlet");
     }
 }
