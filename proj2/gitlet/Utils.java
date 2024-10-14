@@ -16,10 +16,7 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -242,7 +239,12 @@ class Utils {
     }
 
 
-    /* My Utils function */
+    /*
+     * MY UTILS METHODS
+     */
+
+
+    /* MESSAGES AND ERROR REPORTING */
 
     /**
      * Prints out MSG and exits with error code 0.
@@ -255,41 +257,22 @@ class Utils {
         System.exit(0);
     }
 
-    /**
-     * Get relative path of a 'file' from 'reference'
-     * @param file the file to get relative path
-     * @param reference the reference to determines relative path
-     * @return a Path object of relative path
-     */
-    static String getRelativePath(File file, File reference) {
-        return reference.toPath()
-                        .relativize(file.toPath())
-                        .toString();
-    }
+
+    /* WORKING WITH FILE PATH */
 
     /**
      * Get relative path of a 'file' from 'CWD'
      * @param file the file to get relative path
-     * @return a Path object of relative path
+     * @return the relative path represented by string
      */
     static String getRelativePath(File file) {
-        return getRelativePath(file, Repository.CWD);
+        return Repository.CWD.toPath()
+                             .relativize(file.toPath())
+                             .toString();
     }
 
-    /**
-     * Create a file or directory according to 'fileType'
-     * @param x a File object to be created
-     * @param fileType "file" or "dir"
-     */
-     static void createFileOrDirectory(File x, String fileType) {
-        if (fileType.equals("file")) {
-            createFile(x);
-        } else if (fileType.equals("dir")){
-            x.mkdirs();
-        } else {
-            exitWithError("Unknown file type.");
-        }
-    }
+
+    /* CREATE FILE OR DIRECTORY */
 
     /**
      * Create a new file, without handling try-catch
@@ -307,42 +290,83 @@ class Utils {
     }
 
     /**
-     * Get files in 'dir' recursively, including subdirectory.
-     * @param dir where to get files
-     * @return a TreeSet of File
+     * Create a new file, without handling try-catch
+     * @param filename a string represent a file
      */
-    static TreeSet<File> getFilesIn(File dir) {
-        try {
-            return Files.walk(dir.toPath())
-                        .map(Path::toFile)
-                        .filter(File::isFile)
-                        .collect(Collectors.toCollection(TreeSet::new));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    static void createFile(String filename) {
+        createFile(new File(filename));
     }
 
     /**
-     * Checks if the absolute filename contains any String in "keywords"
-     * @param file the file to be checked
-     * @param keywords checking keywords
-     * @return true if file not contains with any keywords, false otherwise
+     * Create a file or directory according to 'fileType'
+     * @param path a File object to be created
+     * @param fileType "file" or "dir"
      */
-    static boolean isFilenameContains(File file, String... keywords) {
-        for (String keyword : keywords) {
-            if (file.toString().contains(keyword)) {
-                return true;
+    static void createFileOrDirectory(File path, String fileType) {
+        if (fileType.equals("file")) {
+            createFile(path);
+        } else if (fileType.equals("dir")){
+            path.mkdirs();
+        } else {
+            exitWithError("Unknown file type.");
+        }
+    }
+
+
+    /* GET FILES */
+
+    /**
+     * Get files in DIR without dealing subdirectory.
+     * @param dir where to get files
+     * @return a List of File
+     */
+    static List<File> getFilesIn(File dir) {
+        List<File> files = new ArrayList<>();
+        List<String> filenames = plainFilenamesIn(dir);
+        if (filenames != null) {
+            for (String filename : filenames) {
+                File file = join(dir, filename);
+                files.add(file);
             }
         }
-        return false;
+        return files;
     }
 
+    static List<File> getFilesIn(String dir) {
+        return getFilesIn(new File(dir));
+    }
+
+
+    /* SAVE AND LOAD */
+
     /**
-     * Checks if it is Gitlet File
-     * @param file the file to be checked
-     * @return true if it's a Gitlet file, false otherwise
+     * Save the object to the FILE
+     * @param savePath the save path
+     * @param obj the object to be saved
      */
-    static boolean isGitletFile(File file) {
-        return isFilenameContains(file, ".gitlet");
+    public static void saveToFile(File savePath, Serializable obj) {
+        // Make sure the savePath exists
+        createFile(savePath);
+
+        if (obj instanceof String) {
+            writeContents(savePath, obj);
+        } else {
+            writeObject(savePath, obj);
+        }
+    }
+
+    public static void saveToFile(String filename, Serializable obj) {
+        saveToFile(new File(filename), obj);
+    }
+
+    public static <T extends Serializable> T loadFromFile(File file, Class<T> expectedClass) {
+        if (expectedClass.equals(String.class)) {
+            return expectedClass.cast(readContentsAsString(file));
+        }
+        return readObject(file, expectedClass);
+    }
+
+    public static <T extends Serializable> T loadFromFile(String filePath, Class<T> expectedClass) {
+        return loadFromFile(new File(filePath), expectedClass);
     }
 }

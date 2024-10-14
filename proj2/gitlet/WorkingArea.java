@@ -15,8 +15,6 @@ public class WorkingArea {
      * @return a TreeSet of File
      */
     public static TreeSet<File> getWorkingFiles() {
-        return getFilesIn(Repository.CWD).stream()
-                                         .filter(f -> !isGitletFile(f))
-                                         .collect(Collectors.toCollection(TreeSet::new));
+        return null;
     }
 }
